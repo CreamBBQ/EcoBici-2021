@@ -8,4 +8,4 @@ ecoBiciData$id_estacion_origen <- NULL
 ecoBiciData$id_estacion_destino <- NULL
 ecoBiciData$direccion_estacion_origen <- NULL
 ecoBiciData$direccion_estacion_destino <- NULL
-save(ecoBiciData, file = "cleanData.Rdata")
+#save(ecoBiciData, file = "cleanData.Rdata")
