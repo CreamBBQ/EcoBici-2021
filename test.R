@@ -18,3 +18,5 @@ ggplot() +
   theme_map() +
   theme(plot.title = element_text(size = 12, face = "bold"))
 
+
+
