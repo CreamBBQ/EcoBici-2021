@@ -21,6 +21,8 @@ ecoBiciData$nombre_estacion_destino <- factor(ecoBiciData$nombre_estacion_destin
 ecoBiciData$fecha_origen_recorrido <- as.POSIXct(ecoBiciData$fecha_origen_recorrido, format = "%Y-%m-%d %H:%M:%OS")
 ecoBiciData$fecha_destino_recorrido <- as.POSIXct(ecoBiciData$fecha_destino_recorrido, format = "%Y-%m-%d %H:%M:%OS")
 ecoBiciData$dia <-  strftime(ecoBiciData$fecha_origen_recorrido, format = "%w")
+ecoBiciData$fecha <- as.Date(ecoBiciData$fecha_origen_recorrido, tz = "America/Argentina/Buenos_Aires" )
+ecoBiciData$duracion_recorrido_min <- ecoBiciData$duracion_recorrido / 60
 ecoBiciData <- ecoBiciData %>% mutate(hora = strftime(ecoBiciData$fecha_origen_recorrido, format = "%H"),
                                       hora = as.numeric(hora))
 ecoBiciData <- ecoBiciData %>% mutate(fin_de_semana = case_when(dia %in% c(1,2,3,4,5) ~ "Día de semana", 

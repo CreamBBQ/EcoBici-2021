@@ -36,3 +36,66 @@ ggplot() +
   theme(plot.title = element_text(size = 12, face = "bold"),
         legend.position = "right") +
   scale_fill_manual(values = colors)
+
+##Mínutos de viaje dependiendo de si es fin de semana o no 
+ggplot(ecoBiciData, 
+       aes(x = duracion_recorrido_min, fill = fin_de_semana), ..scaled..) +
+       geom_boxplot(alpha = 0.7) +
+       coord_cartesian(xlim = c(0, 100)) +
+       labs(title = "Duración de viajes en EcoBici",
+            subtitle = "DIstinción por fin de semana",
+            x = "Duración del viaje en minutos") +
+       scale_fill_manual(values = c("#004c69","#72737e")) +
+       theme_economist() +
+       scale_x_continuous(breaks = seq(0,100,15)) +
+       theme(legend.position = "right",
+             legend.title = element_blank(),
+             axis.ticks.y = element_blank(),
+             axis.text.y = element_blank())
+
+#Hora de extracción distinguiendo por si es fin de semana o no
+ecoBiciData$fecha <- as.Date(ecoBiciData$fecha_origen_recorrido, tz = "America/Argentina/Buenos_Aires" ) #PONER EN EL CLEAN
+ecoBiciData %>% group_by(fecha, fin_de_semana, hora) %>% 
+  summarise(total = n()) %>%  group_by(fin_de_semana, hora) %>% 
+  summarise(media = mean(total)) %>% 
+  ggplot(aes(x = hora, y = media, fill = fin_de_semana)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Promedio de retiros de EcoBici en cada hora del día",
+       subtitle = "Año 2021") + 
+  scale_fill_manual(values = c("#004c69","#72737e")) +
+  scale_x_continuous(breaks = seq(0, 23, 2)) +
+  scale_y_continuous(breaks = seq(0, 850, 100)) + 
+  theme_economist() + 
+  theme(legend.title = element_blank(), 
+        axis.title = element_blank()) 
+  
+## 20 estaciones con mayor indice de extracción
+
+ecoBiciData %>% group_by(nombre_estacion_origen) %>% summarise(total = n()) %>% 
+  arrange(desc(total)) %>% top_n(20) %>% 
+  ggplot(aes(x = total, y = reorder(nombre_estacion_origen, total))) +
+  geom_bar(stat = "identity", fill = "#004c69") +
+  theme_economist() +
+  labs(title = "20 Estaciones EcoBici con mayor cantidad de extracciones", 
+       subtitle = "Año 2021",
+       y = "[id est.] - [nombre]\n",
+       x = "\nCantidad de extracciones") 
+
+##Bicis nuevas: fit entró en agosto 
+
+ecoBiciData %>% filter(fecha > as.Date("2021-07-01")) %>% 
+  group_by(fecha, modelo_bicicleta) %>% summarise(total = n()) %>% 
+  ggplot(aes(x = fecha, y = total, colour = modelo_bicicleta)) +
+  geom_line() +
+  scale_color_manual(values = c("#004c69","#72737e")) +
+  labs(title = "Incorporación del nuevo módelo FIT", 
+       subtitle = "Cantidad de extracciones condicional al módelo de bicicleta\n",
+       y = element_blank(),
+       x = element_blank()) +
+  theme_economist() +
+  theme(legend.title = element_blank())
+  
+  
+         
+
+
