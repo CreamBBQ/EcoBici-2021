@@ -1,9 +1,13 @@
 rm(list = ls())
 setwd("/home/creambbq/code/bikes/archivos")
+
+#Librerias
 library(tidyverse)
 library(sf)
 library(ggthemes)
 library(RColorBrewer)
+
+#Carga de datos 
 load("dataClean.RData")
 colors <- colorRampPalette(brewer.pal(8, "Set3"))(15)
 bairesMap <- st_read("http://cdn.buenosaires.gob.ar/datosabiertos/datasets/barrios/barrios.geojson",
@@ -11,7 +15,9 @@ bairesMap <- st_read("http://cdn.buenosaires.gob.ar/datosabiertos/datasets/barri
 bairesMap$COMUNA <- as.integer(bairesMap$COMUNA)
 bairesMap$COMUNA <- as.factor(bairesMap$COMUNA)
 bairesMap <- bairesMap %>% mutate(km2 = as.numeric(AREA)/1000000)
+subte <- st_read("http://cdn.buenosaires.gob.ar/datosabiertos/datasets/subte-estaciones/subte_estaciones.geojson")
 stations <- ecoBiciData %>% group_by(nombre_estacion_origen,lat_estacion_origen,long_estacion_origen) %>% summarise() %>%  ungroup()
+
 ##Gráfico de densidad de estaciones por barrio. 
 ggplot() + 
   geom_sf(data = bairesMap, color = "snow4") +
@@ -36,6 +42,18 @@ ggplot() +
   theme(plot.title = element_text(size = 12, face = "bold"),
         legend.position = "right") +
   scale_fill_manual(values = colors)
+
+##Comparación con estaciones del subte 
+ggplot() +
+  geom_sf(data = bairesMap, color = "snow4") + 
+  geom_sf(data = spaceStations, color = "darkorange2", size = 1, alpha = 0.9) +
+  geom_sf(data = subte, aes(color = LINEA), size = 2) +
+  labs(title = "Distribución de estaciones EcoBici en comparación con SUBTE",
+       subtitle = "Año 2021") +
+  theme_map() +
+  theme(plot.title = element_text(size = 12, face = "bold"),
+        legend.position = "right") +
+  scale_color_manual(values = c("turquoise1", "red", "blue", "green", "purple", "yellow"))
 
 ##Mínutos de viaje dependiendo de si es fin de semana o no 
 ggplot(ecoBiciData, 
